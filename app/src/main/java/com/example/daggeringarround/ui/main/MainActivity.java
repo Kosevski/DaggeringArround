@@ -4,20 +4,18 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.daggeringarround.BaseActivity;
 import com.example.daggeringarround.R;
-import com.example.daggeringarround.ui.main.posts.PostFragment;
-import com.example.daggeringarround.ui.main.profile.ProfileFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -33,10 +31,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         drawerLayout = findViewById(R.id.drawer_layout);
         navView = findViewById(R.id.nav_view);
-    init();
+        init();
     }
 
-    private void init(){
+    private void init() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_container);
         NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout);
         NavigationUI.setupWithNavController(navView, navController);
@@ -57,24 +55,46 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 sessionManager.logOut();
                 return true;
             }
+            case android.R.id.home: {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()){
-            case R.id.nav_profile:{
-                Navigation.findNavController(this, R.id.nav_host_fragment_container).navigate(R.id.profileScreen);
+        switch (menuItem.getItemId()) {
+            case R.id.nav_profile: {
+                NavOptions navOptions = new NavOptions.Builder()
+                        .setPopUpTo(R.id.main, true)
+                        .build();
+                Navigation.findNavController(this, R.id.nav_host_fragment_container).navigate(R.id.profileScreen, null, navOptions);
                 break;
             }
-            case R.id.nav_post:{
-                Navigation.findNavController(this, R.id.nav_host_fragment_container).navigate(R.id.postsScreen);
+            case R.id.nav_post: {
+                if (isValidDestination()){
+                    Navigation.findNavController(this, R.id.nav_host_fragment_container).navigate(R.id.postsScreen);
+                }
                 break;
             }
         }
         menuItem.setChecked(true);
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private boolean isValidDestination(){
+        return R.id.postsScreen != Navigation.findNavController(this, R.id.nav_host_fragment_container).getCurrentDestination().getId();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        return NavigationUI.navigateUp(Navigation.findNavController(this, R.id.nav_host_fragment_container), drawerLayout);
     }
 }

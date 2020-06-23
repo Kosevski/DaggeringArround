@@ -14,7 +14,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
 @Singleton
 @Component(
         modules = {
-                AndroidSupportInjectionModule.class,
+                AndroidSupportInjectionModule.class, // ovoj modul se dodava sekogas
                 ActivityBuildersModule.class,
                 AppModule.class,
                 ViewModelFactoryModule.class,

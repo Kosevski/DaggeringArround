@@ -39,12 +39,14 @@ public class AppModule {
                 .placeholderOf(R.drawable.white_background)
                 .error(R.drawable.white_background);
     }
+
     @Singleton
     @Provides
     static RequestManager provideGlideInstance(Application app, RequestOptions requestOptions){
        return Glide.with(app)
                 .setDefaultRequestOptions(requestOptions);
     }
+
     @Singleton
     @Provides
     static Drawable provideAppDrawable(Application app){
